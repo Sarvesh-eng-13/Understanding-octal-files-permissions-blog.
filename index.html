@@ -1,1 +1,521 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Octal File Permissions</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6fa;
+            color: #263238;
+            line-height: 1.7;
+        }
+
+        header {
+            background: linear-gradient(135deg, #101c35, #183b56);
+            color: white;
+            text-align: center;
+            padding: 65px 20px;
+        }
+
+        header h1 {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+        header h1 span {
+            color: #65d6a3;
+        }
+
+        header p {
+            color: #d5e4ef;
+            font-size: 17px;
+        }
+
+        nav {
+            background: #14243d;
+            padding: 14px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 12px;
+            font-size: 14px;
+        }
+
+        nav a:hover {
+            color: #65d6a3;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        section {
+            background: white;
+            padding: 28px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        }
+
+        h2 {
+            color: #183b56;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #65d6a3;
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            color: #24516c;
+            margin: 20px 0 10px;
+        }
+
+        p {
+            margin-bottom: 12px;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        .blog-image {
+            display: block;
+            width: 100%;
+            max-width: 700px;
+            height: auto;
+            margin: 22px auto 8px;
+            border-radius: 9px;
+        }
+
+        .caption {
+            text-align: center;
+            color: #667788;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0;
+        }
+
+        th, td {
+            border: 1px solid #dce3e9;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #183b56;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f0f5f8;
+        }
+
+        code {
+            background: #eaf1f5;
+            color: #174b67;
+            padding: 3px 7px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+        }
+
+        pre {
+            background: #101c2c;
+            color: #72e6aa;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .highlight {
+            background: #e9f8f0;
+            border-left: 4px solid #36ad76;
+            padding: 15px;
+            margin: 18px 0;
+        }
+
+        footer {
+            background: #14243d;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 28px;
+            }
+
+            nav a {
+                display: inline-block;
+                margin: 5px;
+            }
+
+            section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Understanding <span>Octal File Permissions</span></h1>
+    <p>The Meaning of 777, 755, 644 and 600</p>
+    <p>A Practical Guide to Linux File Access and Security</p>
+</header>
+
+<nav>
+    <a href="#abstract">Abstract</a>
+    <a href="#introduction">Introduction</a>
+    <a href="#permissions">Permissions</a>
+    <a href="#octal">Octal Values</a>
+    <a href="#commands">Commands</a>
+    <a href="#conclusion">Conclusion</a>
+</nav>
+
+<div class="container">
+
+    <section id="abstract">
+        <h2>1. Abstract</h2>
+        <p>
+            This blog explains how Linux and Unix-based operating systems
+            control access to files and directories using octal file
+            permissions. It describes the three permission types
+            (read, write and execute), the three user categories
+            (owner, group and others), and how the values 4, 2 and 1
+            are added to form permission codes such as 777, 755, 644
+            and 600.
+        </p>
+        <p>
+            The practical part demonstrates the chmod command for
+            setting permissions and the ls -l command for checking them.
+            It also explains why correct permissions are important
+            for protecting information and maintaining system security.
+        </p>
+    </section>
+
+    <section id="introduction">
+        <h2>2. Introduction</h2>
+        <p>
+            Every file and directory in a computer system contains
+            information that needs to be protected from unauthorized
+            access. In Linux and Unix-based operating systems, file
+            permissions determine who can read, modify or execute files.
+        </p>
+        <p>
+            Octal permission codes such as 777, 755, 644 and 600 provide
+            a compact way to represent these access rights. Understanding
+            these concepts helps users protect information and maintain
+            a secure computer system.
+        </p>
+
+        <p><strong>Keywords:</strong> Linux Permissions, Octal Permissions,
+        File Security, Access Control, Read, Write, Execute, chmod.</p>
+
+        <img src="images/image_1.png" alt="Linux file permissions overview"
+             class="blog-image">
+        <p class="caption">Figure 1: Linux file permissions overview</p>
+    </section>
+
+    <section>
+        <h2>3. Objectives</h2>
+        <ol>
+            <li>To understand the three basic permissions: read, write and execute.</li>
+            <li>To understand the three user categories: owner, group and others.</li>
+            <li>To learn how octal permission codes such as 777, 755, 644 and 600 are calculated.</li>
+            <li>To practise the chmod and ls -l commands.</li>
+            <li>To understand why correct permissions are important for system security.</li>
+        </ol>
+    </section>
+
+    <section id="permissions">
+        <h2>4. Concept Explanation</h2>
+
+        <h3>4.1 Why Are File Permissions Important?</h3>
+        <p>
+            File permissions act as a security barrier. They help control
+            who can view information, change file contents, run programs
+            or access directories.
+        </p>
+
+        <ul>
+            <li><strong>Confidentiality:</strong> Restricts private information to authorized users.</li>
+            <li><strong>Integrity:</strong> Prevents unauthorized modification or deletion of files.</li>
+            <li><strong>System Security:</strong> Limits access to important system files and programs.</li>
+        </ul>
+
+        <div class="highlight">
+            <strong>Core Principle:</strong> Give each user only the access
+            needed to perform their task. Excessive permissions can expose
+            data and create security risks.
+        </div>
+
+        <h3>4.2 The Three User Categories</h3>
+
+        <table>
+            <tr>
+                <th>Category</th>
+                <th>Meaning</th>
+            </tr>
+            <tr>
+                <td>Owner (User)</td>
+                <td>The user who owns the file or directory.</td>
+            </tr>
+            <tr>
+                <td>Group</td>
+                <td>A set of users who share assigned access rights.</td>
+            </tr>
+            <tr>
+                <td>Others</td>
+                <td>All users who are neither the owner nor members of the assigned group.</td>
+            </tr>
+        </table>
+
+        <img src="images/image_2.png" alt="Owner group and others diagram"
+             class="blog-image">
+        <p class="caption">Figure 2: Owner, Group and Others</p>
+
+        <h3>4.3 The Three Basic Permissions</h3>
+
+        <table>
+            <tr>
+                <th>Permission</th>
+                <th>Symbol</th>
+                <th>Value</th>
+                <th>Meaning</th>
+            </tr>
+            <tr>
+                <td>Read</td>
+                <td>r</td>
+                <td>4</td>
+                <td>Allows viewing file contents.</td>
+            </tr>
+            <tr>
+                <td>Write</td>
+                <td>w</td>
+                <td>2</td>
+                <td>Allows modifying file contents.</td>
+            </tr>
+            <tr>
+                <td>Execute</td>
+                <td>x</td>
+                <td>1</td>
+                <td>Allows running a file or accessing a directory.</td>
+            </tr>
+        </table>
+
+        <img src="images/image_3.png" alt="Read write and execute permissions"
+             class="blog-image">
+        <p class="caption">Figure 3: Read, Write and Execute permissions</p>
+    </section>
+
+    <section id="octal">
+        <h2>5. Understanding Octal Permission Values</h2>
+
+        <p>
+            Octal permissions are calculated by adding the numerical
+            values of read, write and execute permissions.
+        </p>
+
+        <table>
+            <tr>
+                <th>Permission Combination</th>
+                <th>Calculation</th>
+                <th>Octal Value</th>
+            </tr>
+            <tr><td>---</td><td>0</td><td>0</td></tr>
+            <tr><td>--x</td><td>1</td><td>1</td></tr>
+            <tr><td>-w-</td><td>2</td><td>2</td></tr>
+            <tr><td>-wx</td><td>2 + 1</td><td>3</td></tr>
+            <tr><td>r--</td><td>4</td><td>4</td></tr>
+            <tr><td>r-x</td><td>4 + 1</td><td>5</td></tr>
+            <tr><td>rw-</td><td>4 + 2</td><td>6</td></tr>
+            <tr><td>rwx</td><td>4 + 2 + 1</td><td>7</td></tr>
+        </table>
+
+        <h3>5.1 Common Octal Permission Codes</h3>
+
+        <table>
+            <tr>
+                <th>Code</th>
+                <th>Owner</th>
+                <th>Group</th>
+                <th>Others</th>
+                <th>Meaning</th>
+            </tr>
+            <tr>
+                <td>777</td>
+                <td>rwx</td>
+                <td>rwx</td>
+                <td>rwx</td>
+                <td>Everyone has full access.</td>
+            </tr>
+            <tr>
+                <td>755</td>
+                <td>rwx</td>
+                <td>r-x</td>
+                <td>r-x</td>
+                <td>Owner has full access; others can read and execute.</td>
+            </tr>
+            <tr>
+                <td>644</td>
+                <td>rw-</td>
+                <td>r--</td>
+                <td>r--</td>
+                <td>Owner can modify; others can read.</td>
+            </tr>
+            <tr>
+                <td>600</td>
+                <td>rw-</td>
+                <td>---</td>
+                <td>---</td>
+                <td>Only the owner can read and write.</td>
+            </tr>
+        </table>
+
+        <img src="images/image_4.png" alt="Octal permission values infographic"
+             class="blog-image">
+        <p class="caption">Figure 4: Octal permission values</p>
+    </section>
+
+    <section id="commands">
+        <h2>6. Practical Demonstration</h2>
+
+        <h3>6.1 The chmod Command</h3>
+        <p>
+            The chmod command is used to change the permissions of files
+            and directories in Linux.
+        </p>
+
+        <pre>
+chmod 755 file.txt
+chmod 644 file.txt
+chmod 600 private.txt
+        </pre>
+
+        <h3>6.2 The ls -l Command</h3>
+        <p>
+            The ls -l command displays detailed information about files,
+            including their permissions, owner, group, size and
+            modification date.
+        </p>
+
+        <pre>
+ls -l
+        </pre>
+
+        <p>
+            Example output:
+        </p>
+
+        <pre>
+-rwxr-xr-x  1 user group  1200 file.txt
+-rw-r--r--  1 user group   500 notes.txt
+        </pre>
+
+        <img src="images/image_5.png" alt="Successful execution of chmod and ls -l"
+             class="blog-image">
+        <p class="caption">
+            Figure 5: Screenshot of successful execution of chmod and ls -l
+        </p>
+    </section>
+
+    <section>
+        <h2>7. Real-World Applications</h2>
+        <ul>
+            <li><strong>Personal files:</strong> Permission 600 can help restrict private files to their owner.</li>
+            <li><strong>Web files:</strong> Permission 644 is commonly used for readable website files.</li>
+            <li><strong>Executable programs:</strong> Permission 755 allows the owner to modify and execute a program while others can read and execute it.</li>
+            <li><strong>System security:</strong> Correct permissions help prevent unauthorized access and changes.</li>
+        </ul>
+
+        <img src="images/image_6.png" alt="Linux file security permissions diagram"
+             class="blog-image">
+        <p class="caption">Figure 6: Linux file security permissions</p>
+    </section>
+
+    <section id="conclusion">
+        <h2>8. Conclusion</h2>
+        <p>
+            Octal file permissions are an important part of Linux and
+            Unix-based system security. They provide a simple numerical
+            method for controlling who can read, write and execute files
+            and directories.
+        </p>
+
+        <p>
+            Understanding 777, 755, 644 and 600 helps users choose suitable
+            access settings. By using chmod carefully, reviewing
+            permissions and following the principle of least privilege,
+            users can protect information and reduce unauthorized changes.
+        </p>
+
+        <div class="highlight">
+            <strong>Key Takeaways</strong>
+            <ul>
+                <li>Read (r) = 4, Write (w) = 2 and Execute (x) = 1.</li>
+                <li>The three digits represent owner, group and others.</li>
+                <li>777 gives full access to everyone and is generally unsafe.</li>
+                <li>755 is commonly used for executable programs.</li>
+                <li>644 is suitable for ordinary readable files.</li>
+                <li>600 restricts access to the owner.</li>
+                <li>chmod changes permissions, while ls -l displays them.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>9. References</h2>
+        <ul>
+            <li>
+                <a href="https://man7.org/linux/man-pages/man1/chmod.1.html"
+                   target="_blank">Linux chmod Manual</a>
+            </li>
+            <li>
+                <a href="https://man7.org/linux/man-pages/man1/ls.1.html"
+                   target="_blank">Linux ls Manual</a>
+            </li>
+            <li>
+                <a href="https://www.gnu.org/software/coreutils/manual/"
+                   target="_blank">GNU Coreutils Documentation</a>
+            </li>
+        </ul>
+    </section>
+
+</div>
+
+<footer>
+    <p>Understanding Octal File Permissions</p>
+    <p>Shell Scripting | FY Electronics and Computer Science</p>
+    <p>© 2026</p>
+</footer>
+
+</body>
+</html>
+
